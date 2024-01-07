@@ -3,11 +3,13 @@ from urllib.parse import quote
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
-app = Flask(__name__)
 
-app.secret_key = '^sfkknsjjfsnskn238u3849hftt4gd#$#FRESDGSYETE$^E^%&%&%ỲYGHF94u4394r3wkrhsjrfhesi'
-app.config["SQLALCHEMY_DATABASE_URI"] ='mysql+pymysql://root:%s@localhost/qlks2?charset=utf8mb4' % quote('Admin@123456')
+app = Flask(__name__)
+app.secret_key = '^%^&$^T&*Y(*&*^&*^*(&&*$^4765876986764^&%&*%^%$&*^(*^*%*&^436'
+app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:%s@localhost/qlks1126pm?charset=utf8mb4' % quote('Admin@123456')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config["SQLALCHEMY_RECORD_QUERIES"] = True
+app.config["PAGE_SIZE"] = 6
 
 
 

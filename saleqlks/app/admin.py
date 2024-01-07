@@ -1,12 +1,20 @@
 from flask_admin.contrib.sqla import ModelView
-from flask_admin import Admin, BaseView, expose
+from flask_admin import Admin, BaseView, expose, AdminIndexView
 from app import app, db, dao
 from app.models import LoaiPhong, Phong
 from flask_login import logout_user, current_user
-from flask import redirect
+from flask import redirect, request
+
 from app.models import UserRoleEnum
 
-admin = Admin(app=app, name='KHÁCH SẠN MÂY TRẮNG', template_mode='bootstrap4')
+
+class MyAdminIndex(AdminIndexView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/index.html', stats=dao.count_products_by_cate())
+
+
+admin = Admin(app=app, name='KHÁCH SẠN MÂY TRẮNG', template_mode='bootstrap4', index_view=MyAdminIndex())
 
 
 class AuthenticatedUser(BaseView):
@@ -19,9 +27,9 @@ class AuthenticatedAdmin(ModelView):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
-class MyRoomView(AuthenticatedAdmin):
+class MyProductView(AuthenticatedAdmin):
     column_display_pk = True
-    column_list = ['maPhong', 'tenPhong', 'giaPhong', 'dienTich', 'loaiphong']
+    column_list = ['maPhong', 'tenPhong', 'giaPhong', 'dienTich', 'loaiPhong']
     column_searchable_list = ['tenPhong']
     column_filters = ['giaPhong', 'tenPhong', 'dienTich']
     can_export = True
@@ -31,14 +39,16 @@ class MyRoomView(AuthenticatedAdmin):
         return current_user.is_authenticated
 
 
-class MyTypeRoomView(AuthenticatedAdmin):
-    column_list = ['tenLP']
+class MyCategoryView(AuthenticatedAdmin):
+    column_list = ['tenLP', 'phongs']
 
 
 class MyStatsView(AuthenticatedUser):
     @expose("/")
     def index(self):
-        return self.render('admin/stats.html')
+        kw = request.args.get("kw")
+        return self.render('admin/stats.html',
+                           stats=dao.revenue_stats())
 
 
 class MyLogoutView(AuthenticatedUser):
@@ -48,7 +58,7 @@ class MyLogoutView(AuthenticatedUser):
         return redirect('/admin')
 
 
-admin.add_view(MyTypeRoomView(LoaiPhong, db.session))
-admin.add_view(MyRoomView(Phong, db.session))
-admin.add_view(MyStatsView(name='Thong ke bao cao'))
-admin.add_view(MyLogoutView(name='Dang xuat'))
+admin.add_view(MyCategoryView(LoaiPhong, db.session, category='Quản Lý Danh Sách Phòng'))
+admin.add_view(MyProductView(Phong, db.session, category='Quản Lý Danh Sách Phòng'))
+admin.add_view(MyStatsView(name='Thống Kê Báo Cáo'))
+admin.add_view(MyLogoutView(name='Đăng Xuất'))

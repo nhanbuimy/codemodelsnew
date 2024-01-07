@@ -25,10 +25,11 @@
 {% include 'layout/header.html' %}
 
 {% include 'layout/tmp.html' %}
-
-{% block content %}{% endblock %}
-
+<div class="container">
+{% block content %} {% endblock %}
+</div>
 {% include 'layout/footer.html' %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
 
 </body>
 </html>
